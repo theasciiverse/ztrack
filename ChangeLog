@@ -1,0 +1,16 @@
+Wed Nov  1 14:42:30 1995  Russell Marks  <rus@lifeson>
+
+	* Makefile: changed literal 'gcc' (thinko) to '$(CC)'.
+
+	* ztrack.6: fixed inaccuracies.
+
+Fri Oct 27 15:18:40 1995  Russell Marks  <rus@lifeson>
+
+	* Added colour.
+
+	* Removed playarea array and re-implemented in a more normal
+ 	curses way.
+
+Fri Oct 27 03:17:27 1995  Russell Marks  <rus@lifeson>
+
+	* First working version.

@@ -1,0 +1,31 @@
+       ztrack v1.0 - a simple curses-based pseudo-3D driving game
+
+                    Public domain by Russell Marks
+
+
+
+Installation
+------------
+
+Edit the Makefile as necessary (details there). If you want the man
+page or executable somewhere other than /usr/man/man6 and /usr/games
+respectively, be sure to change the BINDIR and/or MANDIR lines. Then
+do 'make install'.
+
+
+
+Description
+-----------
+
+Ztrack is a simple curses-based pseudo-3D driving game. But, um, you
+know that by now. :-)
+
+You probably need a pretty quick terminal for it to be at all
+playable. It's good on the Linux console and in an xterm, at least.
+
+Check out the man page for more details.
+
+
+Share and enjoy!
+
+-Rus.
