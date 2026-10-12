@@ -6,8 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <time.h>
 #include <curses.h>
 
@@ -60,7 +58,7 @@ typedef int fixed;
 
 char clouds[3][80];
 
-int ttyfd,colour=0;
+int colour=0;
 
 /* the other cars' positions are given relative to the player.
  * this saves messing about with a track, etc.
@@ -112,14 +110,19 @@ void screenon()
 {
 initscr();
 cbreak(); noecho();
-if((ttyfd=open("/dev/tty",O_RDONLY|O_NONBLOCK))<0)
-  return;
+/* read keys through curses without waiting, so arrow keys arrive as
+ * KEY_LEFT etc. rather than as an Esc sequence that would quit
+ */
+nodelay(stdscr,TRUE);
+keypad(stdscr,TRUE);
+#ifdef NCURSES_VERSION
+set_escdelay(25);	/* a lone Esc still quits, without a 1s lag */
+#endif
 }
 
 
 void screenoff()
 {
-close(ttyfd);
 clearscreen();
 echo(); nocbreak();
 endwin();
@@ -129,12 +132,9 @@ putchar('\n');
 
 int getnbkey()
 {
-unsigned char c;
+int c=getch();
 
-if(read(ttyfd,&c,1)==-1)
-  return(-1);
-else
-  return((int)c);
+return(c==ERR?-1:c);
 }
 
 
@@ -542,7 +542,7 @@ for(b=0;b<4;b++)
     draw_car_sprite(a,b);
 
 drawscrn();
-while(getnbkey()==-1) usleep(100000);
+while(getnbkey()==-1) napms(100);
 }
 
 
@@ -665,12 +665,12 @@ while(!quit && lives>0)
     {
     switch(getnbkey())
       {
-      case 'q': spd_mode=SPDMODE_ACCEL; break;
-      case 'a': spd_mode=SPDMODE_DECEL; break;
+      case 'q': case KEY_UP: spd_mode=SPDMODE_ACCEL; break;
+      case 'a': case KEY_DOWN: spd_mode=SPDMODE_DECEL; break;
       case 32:
       case   9: spd_mode=SPDMODE_CONST; break;	/* 9 = ^I = TAB */
-      case 'o': if(lane>0) lane--; break;
-      case 'p': if(lane<2) lane++; break;
+      case 'o': case KEY_LEFT: if(lane>0) lane--; break;
+      case 'p': case KEY_RIGHT: if(lane<2) lane++; break;
       
       case 'X': case 27: quit=1;
       }
@@ -707,7 +707,7 @@ while(!quit && lives>0)
     drawscrn();
     
     /* don't wait if hit; it looks odd */
-    if(!plyr_hit) usleep(100000);
+    if(!plyr_hit) napms(100);
     frames++;
     score+=(FIX_DOWN(speed)/5);
     }
@@ -721,16 +721,17 @@ while(!quit && lives>0)
     mvaddstr(10,30,",------------------.");
     mvaddstr(11,30,"| CRASH! LIFE LOST |");
     mvaddstr(12,30,"`------------------'");
-    lose_input(); drawscrn();
-    sleep(2);
+    drawscrn();
+    napms(2000);
     if(lives==0)
       {
       mvaddstr(11,32,"G A M E  O V E R");
-      lose_input(); drawscrn();
-      sleep(2);
+      drawscrn();
+      napms(2000);
       }
     else
       mycar(0);
+    lose_input();	/* drop keys pressed during the pause */
     }
   }
 
@@ -795,7 +796,7 @@ mvprintw(18,24,"Current high score: %08d",high);
 drawscrn();
 
 while((c=getnbkey())!=' ' && c!='q' && c!=27)
-  usleep(200000);
+  napms(200);
 
 return(c==' '?0:1);
 }
