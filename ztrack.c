@@ -775,8 +775,6 @@ use_colour(COLOR_RED,A_BOLD);
 mvaddstr(5,0,logo[5]);
 use_colour(COLOR_GREEN,A_NORMAL);
 mvaddstr(6,0,logo[6]);
-use_colour(COLOR_CYAN,A_NORMAL);
-mvaddstr(7,0,logo[7]);
 
 use_colour(COLOR_GREEN,A_BOLD);
 mvaddstr(10,18,"Press:");
