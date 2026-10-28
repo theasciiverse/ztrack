@@ -6,9 +6,6 @@ With av, the Asciiverse client (https://asciiverse.sh):
     av install ztrack
     av play ztrack
 
-Or download the archive for your system from this repository's Releases,
-unpack it and run ./ztrack (ztrack.exe on Windows).
-
 The original README follows.
 
 ------------------------------------------------------------------------
